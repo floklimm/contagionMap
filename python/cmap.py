@@ -12,11 +12,6 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
 
-# not needed anymore (doesn't provide a proper speed up)
-from numba import jit, prange
-
-
-
 # A) Network construction
 
 # check whether nodes are adjacet in a ring lattice
@@ -103,57 +98,6 @@ def constructNoisyRingLattice(numberNodes=200,geometricDegree=6,nongeometricDegr
         ringLatticeNetworkWithNoise = add_non_geometric_edges(ringLatticeNetwork,nongeometricDegree,type=type)
     return(ringLatticeNetworkWithNoise)
 
-# # add random edges
-# def add_non_geometric_edges(G,edgesPerNode,type='semirandom'):
-#     # add same number of edges outgoing each node
-#     if type == 'semirandom':
-#         for node in range(G.number_of_nodes()):
-#             edgesCreated = 0
-#             # try random nodes to connect to and break after succesfully created enough (this only works well for sparse graphs)
-#             random_node = sample(G.nodes(),1)[0]
-#             if G.has_edge(node, random_node) is False:
-#                 G.add_edge(node,random_node, type="nongeometric")
-#                 edgesCreated = edgesCreated + 1 # increase count
-#             if edgesCreated == (edgesPerNode*G.number_of_nodes())/2:
-#                 break
-#     elif type == 'regular':
-#         # add the same number of edges for each node
-#         # the stubs are each node as often as edges per node
-#         stubList = [list(G.nodes()) for i in np.arange(edgesPerNode)]
-#         stubs = [item for sublist in stubList for item in sublist]
-
-#         edgesCreated = 0 
-#         failedConstructionAttempt = 0
-#         while edgesCreated<(edgesPerNode*G.number_of_nodes()/2):
-#             # get two random stubs
-#             random_stubs = sample(stubs,2)
-#             # check if you can create this edge 
-#             if (G.has_edge(random_stubs[0], random_stubs[1]) is False) & (random_stubs[0] != random_stubs[1]):
-#                 # create it
-#                 G.add_edge(random_stubs[0],random_stubs[1], type="nongeometric")
-#                 # remove the nodes from the stub list
-#                 stubs.remove(random_stubs[0])
-#                 stubs.remove(random_stubs[1])
-#                 edgesCreated = edgesCreated + 1 # increase count
-#                 failedConstructionAttempt = 0
-#             else:
-#                 # if failed 100 times repeatedly, restart
-#                 failedConstructionAttempt = failedConstructionAttempt + 1
-#                 if failedConstructionAttempt > 100:
-#                     return()
-#     else:
-#         ## should implement a completely random procedure
-#         error('not implemented!')
-#     return(G)    
-
-# # construct a noisy geometric ring lattice network
-# def constructNoisyRingLattice(numberNodes=200,geometricDegree=6,nongeometricDegree=2,type='regular'):
-#     # 1) construct a ring lattice
-#     ringLatticeNetwork = make_ring_lattice(numberNodes, geometricDegree)
-#     # 2) add non-geometric edges
-#     add_non_geometric_edges(ringLatticeNetwork,nongeometricDegree,type=type)
-#     return(ringLatticeNetwork)
-
 # drawing geometrically
 def drawGeometricNetwork(G,node_size=10):
     # get node positions
@@ -230,42 +174,6 @@ def plotTwoDimensionalEmbedding(contagionMap,activationTimes,vmax=None):
    
 
 
-# dynamical processes
-# def simulateWattsThresholdModel(network,initialCondition,threshold=0.1,numberSteps=np.Inf):
-#     # simulates the Watts threshold model for a single starting condition
-#     # initialCondition = index of initially activated nodes
-#     # threshold =  at the moment only homogenous threshold implemented
-
-
-#     # vector with activation time of each node
-#     activationTime =np.empty((network.number_of_nodes()))
-#     activationTime[:] = np.NaN
-#     activationTime[initialCondition] = 0
-#     # run of a certain number of steps
-#     if numberSteps>0:
-#         timeStep = 0
-#         while timeStep<numberSteps:
-#             activationTimeLast = copy.deepcopy(activationTime)
-#             timeStep = timeStep + 1 # increase step
-#             #### This will be possible to speed up by checking only a subset of the nodes (i.e., those that are neighbouring just activated ones ####
-#             for j in np.arange(network.number_of_nodes()):
-#                 # only check nodes that are not active yet
-#                 if np.isnan(activationTimeLast[j]):
-#                     # compute number of neighbours that are active
-#                     neighbours_j = list(network.neighbors(j)) ## maybe to this outside of the loop once for all nodes
-#                     degree = float(len(neighbours_j))
-#                     numberActiveNeighbours = float(np.count_nonzero(~np.isnan(activationTimeLast[neighbours_j])))
-#                     if ((numberActiveNeighbours/degree)>threshold):
-#                         # activate the node
-#                         activationTime[j] = timeStep
-#             # break if steady state is reached 
-#             if np.array_equal(activationTimeLast, activationTime):
-#                 break
-#     else:
-#         # run until a steady state is reached
-#         error('not implemented')
-#     return(activationTime)
-
 def simulateWattsThresholdModel(network,initialCondition,threshold=0.1,numberSteps=np.Inf):
     # simulates the Watts threshold model for a single starting condition
     # initialCondition = index of initially activated nodes
@@ -313,47 +221,6 @@ def simulateWattsThresholdModel(network,initialCondition,threshold=0.1,numberSte
         error('not implemented')
     return(activationTime)
 
-
-# @jit(parallel=True)
-# def runTruncatedContagionMap(network,threshold=0.1,numberSteps=np.Inf,symmetric=True):
-#     # run the  truncated contagion map by simulating each of the Watts' threshold models
-#     # intialise the output matrix
-#     contagionMap = np.zeros((network.number_of_nodes(),network.number_of_nodes()))
-#     # run for each node the Watts' threshold model
-#     for i in prange(network.number_of_nodes()):
-#         # find cluster seeding as node itself plus all neighbours
-#         seeding = list(network.neighbors(i))
-#         seeding.append(i)
-#         # run the Watts' model
-#         contagionMap[:,i] = simulateWattsThresholdModel(network,seeding,threshold=threshold,numberSteps=numberSteps)
-#     # replace the never activated with 2(number of nodes)
-#     contagionMap = np.nan_to_num(contagionMap,nan=2*network.number_of_nodes()+1)
-
-#     # symmetrise the contagion map
-#     if symmetric:
-#         contagionMap = contagionMap + np.transpose(contagionMap)
-
-#     return(contagionMap)
-
-# def runTruncatedContagionMap(network,threshold=0.1,numberSteps=np.Inf,symmetric=True):
-#     # run the  truncated contagion map by simulating each of the Watts' threshold models
-#     # intialise the output matrix
-#     contagionMap = np.zeros((network.number_of_nodes(),network.number_of_nodes()))
-#     # run for each node the Watts' threshold model
-#     for i in np.arange(network.number_of_nodes()):
-#         # find cluster seeding as node itself plus all neighbours
-#         seeding = list(network.neighbors(i))
-#         seeding.append(i)
-#         # run the Watts' model
-#         contagionMap[:,i] = simulateWattsThresholdModel(network,seeding,threshold=threshold,numberSteps=numberSteps)
-#     # replace the never activated with 2(number of nodes)
-#     contagionMap = np.nan_to_num(contagionMap,nan=2*network.number_of_nodes()+1)
-
-#     # symmetrise the contagion map
-#     if symmetric:
-#         contagionMap = contagionMap + np.transpose(contagionMap)
-
-#     return(contagionMap)
 
 def runTruncatedContagionMap(network,threshold=0.1,numberSteps=np.Inf,symmetric=True):
     # run the  truncated contagion map by simulating each of the Watts' threshold models
