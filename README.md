@@ -4,6 +4,9 @@ Python library that allows the construction of contagion maps from network data.
 
 This code accompanies the paper "Topological data analysis of truncated contagion maps" by Florian Klimm.
 
+![image info](./python/figures/paperReproduction/figures/Fig5-embeddingTruncatedContagionMaps.pdf)
+
+
 ## Prerequisites
 - Python (tested for 3.9.7)
 - Some Python standard libraries (numpy,networkx,...)
@@ -27,7 +30,7 @@ contagionMap_t03_truncated = conmap.runTruncatedContagionMap(noisyRL,threshold=0
 
 # visualisation
 
-# 
+#
 
 ```
 
