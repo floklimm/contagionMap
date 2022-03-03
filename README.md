@@ -14,7 +14,9 @@ Taylor, D., Klimm, F., Harrington, H. A., Kramár, M., Mischaikow, K., Porter, M
 ## Prerequisites
 - Python (tested for 3.9.7)
 - Some Python standard libraries (numpy,networkx,...)
-- [Ripser](https://github.com/Ripser/ripser)  for the topological data analysis (persistent homology)
+### Optional
+- [Ripser](https://github.com/Ripser/ripser) for the topological data analysis (persistent homology)
+- [scanpy](https://github.com/theislab/scanpy) for the analysis of single-cell gene expression data
 
 ## How-to
 The code enables
@@ -29,11 +31,19 @@ import cmap as conmap
 # network construction
 noisyRL = conmap.constructNoisyRingLattice(numberNodes=400,geometricDegree=6,nongeometricDegree=2)
 
-# contagion map
+# truncated contagion map
 contagionMap_t03_truncated = conmap.runTruncatedContagionMap(noisyRL,threshold=0.3,numberSteps=20)
 
 # compute ring stability with Ripser
 ringStabilityTruncated = conmap.callRipser(contagionMap_t03_truncated)
+
+# full contagion maps can be computed by setting the numberSteps parameter to infinity
+contagionMap_t03_full= conmap.runTruncatedContagionMap(noisyRL,threshold=0.3,numberSteps=np.Inf)
+
+# compute ring stability with Ripser
+ringStabilityFull= conmap.callRipser(contagionMap_t03_full)
+
+# for many noisy ring lattice networks the truncated contagion map yields a larger ring stability than the full contagion map. For details see the manuscript.
 
 ```
 
