@@ -1,4 +1,4 @@
-# library for contagion maps
+# library for the computation of (truncated) contagion maps
 
 import networkx as nx
 from random import sample
@@ -154,10 +154,6 @@ def plotTwoDimensionalEmbedding(contagionMap,activationTimes,vmax=None):
     pca = PCA(n_components=2)
     X_projected = pca.fit_transform(contagionMap)
 
-    # plotting of the nodes
-    
-    #plt.scatter(x=X_projected[:,0],y=X_projected[:,1],s=10,c=activationTimes)
-
     # 1) plot seed nodes
     seedNodes = np.where(activationTimes==0)[0]
     plt.scatter(x=X_projected[seedNodes,0],y=X_projected[seedNodes,1],s=10,c='#008000')
@@ -178,6 +174,7 @@ def simulateWattsThresholdModel(network,initialCondition,threshold=0.1,numberSte
     # simulates the Watts threshold model for a single starting condition
     # initialCondition = index of initially activated nodes
     # threshold =  at the moment only homogenous threshold implemented
+    # numberSteps = number of discrete time steps to compute
 
 
     # vector with activation time of each node
@@ -224,6 +221,8 @@ def simulateWattsThresholdModel(network,initialCondition,threshold=0.1,numberSte
 
 def runTruncatedContagionMap(network,threshold=0.1,numberSteps=np.Inf,symmetric=True):
     # run the  truncated contagion map by simulating each of the Watts' threshold models
+    # numberSteps sets the number of steps of the dynamical process to consider. If set to np.Inf a full contagion map is computed
+
     # intialise the output matrix
     contagionMap = np.zeros((network.number_of_nodes(),network.number_of_nodes()))
     # run for each node the Watts' threshold model
