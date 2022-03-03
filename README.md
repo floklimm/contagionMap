@@ -13,7 +13,7 @@ Taylor, D., Klimm, F., Harrington, H. A., Kramár, M., Mischaikow, K., Porter, M
 
 ## Prerequisites
 - Python (tested for 3.9.7)
-- Some Python standard libraries (numpy,networkx,...)
+- Some standard Python libraries (numpy,networkx,...)
 ### Optional
 - [Ripser](https://github.com/Ripser/ripser) for the topological data analysis (persistent homology)
 - [scanpy](https://github.com/theislab/scanpy) for the analysis of single-cell gene expression data
