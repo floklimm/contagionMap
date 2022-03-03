@@ -26,13 +26,13 @@ import cmap as conmap
 noisyRL = conmap.constructNoisyRingLattice(numberNodes=400,geometricDegree=6,nongeometricDegree=2)
 
 # contagion map
-contagionMap_t03_truncated = conmap.runTruncatedContagionMap(noisyRL,threshold=0.3,numberSteps=40)
+contagionMap_t03_truncated = conmap.runTruncatedContagionMap(noisyRL,threshold=0.3,numberSteps=20)
 
-# visualisation
-
-#
+# compute ring stability with Ripser
+ringStabilityTruncated = conmap.callRipser(contagionMap_t03_truncated)
 
 ```
 
+There is a small tutorial Jupyter Notebook in `/python/tutorial.ipynb` that compares a truncated with a full contagion map.
 
 To reproduce the figures in the manuscript, see Jupyter notebooks in the folder `/python`.
