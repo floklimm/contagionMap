@@ -2,9 +2,10 @@
 Python library that allows the construction of contagion maps from network data.
 
 
-This code accompanies the paper "Topological data analysis of truncated contagion maps" by Florian Klimm.
+This code accompanies the paper "Topological data analysis of truncated contagion maps" by Florian Klimm (2022).
 
 This code also allows the construction of non-truncated contagion maps as originally introduced in
+
 Taylor, D., Klimm, F., Harrington, H. A., Kramár, M., Mischaikow, K., Porter, M. A., & Mucha, P. J. (2015). Topological data analysis of contagion maps for examining spreading processes on networks. Nature Communications, 6(1), 1-11.
 
 ![embedding example figure](./python/figures/Fig5-embeddingTruncatedContagionMaps.png)
